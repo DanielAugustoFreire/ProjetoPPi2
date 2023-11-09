@@ -1,0 +1,265 @@
+	#include <stdio.h>
+#include <stdlib.h>
+#include <windows.h>
+#include <string.h>
+#include <ctype.h>
+#include <conio.h>
+
+typedef struct {
+    char nome[30], tipo_pao[30];
+    int codigo;
+    float preco;
+} LANCHES;
+
+void inserir() {
+    FILE* arquivo;
+    LANCHES lan;
+    arquivo = fopen("lanches.bin", "ab");
+    if (arquivo == NULL)
+        printf("Erro na abertura do arquivo");
+    else {
+        do {
+            system("cls");
+            fflush(stdin);
+            printf("\nNome do Lanche: ");
+            gets(lan.nome);
+            fflush(stdin);
+            printf("Tipo de Pao: ");
+            gets(lan.tipo_pao);
+            printf("Codigo:");
+            scanf("%d", &lan.codigo);
+            fflush(stdin);
+            printf("Preco:");
+            scanf("%f", &lan.preco);
+
+            fwrite(&lan, sizeof(LANCHES), 1, arquivo);
+            printf("Deseja continuar? ");
+        } while (getche() == 's');
+        fclose(arquivo);
+    }
+}
+
+void listar() {
+    FILE* arquivo;
+    LANCHES lan;
+    arquivo = fopen("lanches.bin", "rb");
+    if (arquivo == NULL)
+        printf("Erro na abertura do arquivo");
+    else {
+        while (fread(&lan, sizeof(LANCHES), 1, arquivo) == 1) {
+            printf("\nNome_Lanche: %s\n", lan.nome);
+            printf("Tipo de Pao: %s\n", lan.tipo_pao);
+            printf("Codigo: %d\n", lan.codigo);
+            printf("Preco: %f\n", lan.preco);
+        }
+        fclose(arquivo);
+    }
+    system("pause");
+}
+
+int buscar(char lanche[30]) {
+    FILE* arquivo;
+    LANCHES lan;
+    arquivo = fopen("lanches.bin", "rb");
+    if (arquivo == NULL)
+        printf("Erro na abertura do arquivo");
+    else {
+        while(fread(&lan, sizeof(LANCHES), 1, arquivo) == 1 && strcmp(lanche, lan.nome) != 0); 
+		
+		if(!feof(arquivo))
+			return (ftell(arquivo) - sizeof(LANCHES));
+        else 
+        	return -1;
+                
+                
+    system("pause");
+}
+
+
+void pesquisarlanche(char lanche[30]) {
+    FILE* arquivo;
+    LANCHES lan;
+    arquivo = fopen("lanches.bin", "rb");
+    if (arquivo == NULL)
+        printf("Erro na abertura do arquivo");
+    else {
+        while (fread(&lan, sizeof(LANCHES), 1, arquivo) == 1) {
+            if (strcmp(lanche, lan.nome) == 0) {
+                printf("\nNome_Lanche: %s\n", lan.nome);
+                printf("Tipo de Pao: %s\n", lan.tipo_pao);
+                printf("Codigo: %d\n", lan.codigo);
+                printf("Preco: %f\n", lan.preco);
+            }
+        }
+        fclose(arquivo);
+    }
+    system("pause");
+}
+void pesquisarlanchepao(char lanche[30]) {
+    FILE* arquivo;
+    LANCHES lan;
+    arquivo = fopen("lanches.bin", "rb");
+    if (arquivo == NULL)
+        printf("Erro na abertura do arquivo");
+    else {
+        while (fread(&lan, sizeof(LANCHES), 1, arquivo) == 1) {
+            if (strcmp(lanche, lan.tipo_pao) == 0) {
+                printf("\nNome_Lanche: %s\n", lan.nome);
+                printf("Tipo de Pao: %s\n", lan.tipo_pao);
+                printf("Codigo: %d\n", lan.codigo);
+                printf("Preco: %f\n", lan.preco);
+            }
+        }
+        fclose(arquivo);
+    }
+    system("pause");
+}
+
+void trocarpreco(char lanche[30], float preco_new) {
+    FILE* arquivo;
+    LANCHES lan;
+
+    arquivo = fopen("lanches.bin", "rb+");
+    if (arquivo == NULL) {
+        printf("Erro na abertura do arquivo");
+    } else {
+        while (fread(&lan, sizeof(LANCHES), 1, arquivo) == 1) {
+            if (strcmp(lanche, lan.nome) == 0) {
+
+                lan.preco = preco_new;
+
+
+                fseek(arquivo, -sizeof(LANCHES), SEEK_CUR);
+
+
+                fwrite(&lan, sizeof(LANCHES), 1, arquivo);
+
+                printf("\nNome_Lanche: %s\n", lan.nome);
+                printf("Tipo de Pao: %s\n", lan.tipo_pao);
+                printf("Codigo: %d\n", lan.codigo);
+                printf("Preco: %f\n", lan.preco);
+
+                fflush(arquivo);
+            }
+        }
+        fclose(arquivo);
+    }
+    system("pause");
+}
+void remover(char lanche[30])
+{
+	int pos;
+	FILE *arquivo;
+	LANCHES lan;
+	arquivo = fopen("lanches.bin", "rb");
+	
+	if(arquivo == NULL)
+	{
+		printf("Erro ao Abrir o Arquivo");
+	}else{
+		pos = buscar(lanche);
+		if(pos == -1)
+		{
+			printf("Lanche nao encontrado");
+		}
+		else{
+			fseek(arquivo, pos, SEEK_SET);
+			fread(&lan, sizeof(LANCHES), 1, arquivo);
+			printf("\nNome_Lanche: %s\n", lan.nome);
+            printf("Tipo de Pao: %s\n", lan.tipo_pao);
+            printf("Codigo: %d\n", lan.codigo);
+            printf("Preco: %f\n", lan.preco);
+            printf("\nDeseja excluir o registro? ");
+			if(toupper(getche()) == 'S')
+			{
+				FILE *temp = fopen("auxiliar.bin", "wb");
+				rewind(arquivo);
+				fread(&lan, sizeof(LANCHES), 1, arquivo);
+				while(!feof(arquivo))
+				{
+					if(strcmp(lanche, lan.nome) != 0)
+						fwrite(&lan, sizeof(LANCHES),1, temp);
+					fread(&lan,sizeof(LANCHES), 1, arquivo);
+				}
+			fclose(arquivo);
+			fclose(temp);
+			remove("lanches.bin");
+			rename("auxiliar.bin", "lanches.bin");
+			printf("Excluido com sucesso!");
+			}
+			else{
+				fclose(arquivo);
+			}
+		}
+		system("cls");
+	}
+}
+
+
+int main() {
+    int opcao, codigin;
+    char lanche[30];
+    float novo_preco;
+    do {
+    printf("\n1 - Cadastrar lanche\n");
+    printf("2 - Listar lanche\n");
+    printf("3 - Consultar lanche pelo nome\n");
+    printf("4 - Alterar Preco de um Lanche\n");
+    printf("5 - Consultar Lanche por Pao\n");
+    printf("6 - Remover Lanche pelo Nome\n"); // Correção do número do caso
+    printf("7 - Sair: "); // Correção do número do caso
+    scanf("%d", &opcao);
+        switch (opcao) {
+            case 1:
+                inserir();
+                system("cls");
+                break;
+            case 2:
+                system("cls");
+                listar();
+                system("cls");
+                break;
+            case 3:
+                system("cls");
+                fflush(stdin);
+                printf("Informe o nome lanche a ser consultado\n");
+                gets(lanche);
+                pesquisarlanche(lanche);
+                system("cls");
+                break;
+            case 4:
+                system("cls");
+                fflush(stdin);
+                printf("Informe o lanche a ser trocado o preco\n");
+                gets(lanche);
+                printf("Informe o novo preço: ");
+                scanf("%f", &novo_preco);
+                trocarpreco(lanche, novo_preco);
+                break;
+            case 5:
+            	system("cls");
+                fflush(stdin);
+                printf("Informe o tipo de pao dos lanches a ser consultado\n");
+                gets(lanche);
+                pesquisarlanchepao(lanche);
+                system("cls");
+            	break;
+			case 6:
+				system("cls");
+                fflush(stdin);
+                printf("Informe o nome do lanche a ser excluido\n");
+                gets(lanche);
+                remover(lanche);
+                system("cls");
+				break;
+			case 7:
+                printf("Ate logo...");
+                system("pause");
+                break;
+            default:
+                printf("Opcao invalida!\n");
+        }
+    } while (opcao != 7);
+
+    return 0;
+}
