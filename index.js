@@ -100,7 +100,7 @@ function processarCadastro(req, res)
     <a href="/">Voltar ao menu</a>
     <a href="/cadastro.html">Continuar cadastrando</a>
         </body>
-    `
+    `;
 
 
     console.log(lista_usuario);
@@ -138,7 +138,7 @@ function listar(req,res){
     `            </tbody>
     </table>
     <a href="/">Voltar ao menu</a>
-    `
+    `;
        
     res.end(conteudo);
 };
@@ -149,11 +149,11 @@ app.get(`/cadastrarusuario`, processarCadastro);
 app.get(`/listar`, listar);
 
 app.get(`/`, (req,res) => {
-    app.use(express.static(path.join(process.cwd(),`src`)))
+    app.use(express.static(path.join(process.cwd(),`src`)));
 
     res.send(`<h1>Responda o seguinte Form:<br><a href="/cadastro.html">Formulario</a></h1><br>
               <h1>Para Listar escreva localhost:3000/listar</h1>  
-    `)
+    `);
 });
 
 app.listen(PORTA, HOST, () =>{
