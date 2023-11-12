@@ -24,9 +24,52 @@ function processarCadastro(req, res)
 
     lista_usuario.push(usuario);
 
-    let conteudo = ` <body>
-    <h1>Lista de usuário cadastrados</h1>
-    <table
+    let conteudo = `    <style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    h1 {
+        color: #333; /* Altere a cor conforme necessário */
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px; /* Ajuste conforme necessário */
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2; /* Cor de fundo para cabeçalho */
+    }
+
+    /* Estilizar linhas alternadas */
+    tbody tr:nth-child(even) {
+        background-color: #f9f9f9; /* Cor de fundo para linhas pares */
+    }
+    a {
+        display: inline-block;
+        padding: 10px;
+        margin-top: 10px; /* Ajuste conforme necessário */
+        text-decoration: none;
+        color: #fff; /* Cor do texto dos links */
+        background-color: #007bff; /* Cor de fundo dos links */
+        border-radius: 5px; /* Borda arredondada */
+        transition: background-color 0.3s ease; /* Efeito de transição suave */
+    }
+
+    a:hover {
+        background-color: #0056b3; /* Cor de fundo ao passar o mouse */
+    }
+</style> <body  style="font-family: Arial, sans-serif;">
+    <h1>Lista de usuario cadastrados</h1>
+    <table>
         <thead>
             <tr>
                 <th>Email</th>
